@@ -1,0 +1,5 @@
+{
+    "board": "adafruit:avr:flora8",
+    "sketch": "techweek.ino",
+    "port": "/dev/cu.usbmodem1411"
+}
