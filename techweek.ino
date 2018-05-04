@@ -8,6 +8,15 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN_STRIP, NEO_GRBW + NEO_KHZ800);
 
 
+// modes
+enum modes {
+  MODE_PALETTE_FADER,
+
+  MODES_COUNT
+};
+uint8_t currentMode = MODE_PALETTE_FADER;
+
+
 // colors
 enum colorNames {
   COLOR_PTW_BLUE,
@@ -74,13 +83,12 @@ void setup() {
 }
 
 void loop() {
-  uint16_t colorIndex = 0, pixelIndex;
 
-  for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
-      // COLORS_COUNT
-      strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
-      colorIndex++;
+  switch (currentMode) {
+    case MODE_PALETTE_FADER:
+      paletteFader();
   }
+
 
   // render to strip
   strip.show();
@@ -88,4 +96,14 @@ void loop() {
 
   // tap the breaks
   delay(10);
+}
+
+void paletteFader() {
+  uint16_t colorIndex = 0, pixelIndex;
+
+  for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
+      // COLORS_COUNT
+      strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
+      colorIndex++;
+  }
 }
