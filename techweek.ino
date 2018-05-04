@@ -135,7 +135,7 @@ void paletteFader() {
     if (paletteFader_brightness <= 0) {
       paletteFader_brightness = 0;
       paletteFader_incoming = true;
-      paletteFader_sleepCycles = 5;
+      paletteFader_sleepCycles = 0;
 
       paletteFader_startColorIndex++;
 
