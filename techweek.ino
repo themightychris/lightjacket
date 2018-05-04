@@ -11,10 +11,11 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN_STRIP, NEO_GRBW + NEO_KH
 // modes
 enum modes {
   MODE_PALETTE_FADER,
+  MODE_PALETTE_SNAKE,
 
   MODES_COUNT
 };
-uint8_t currentMode = MODE_PALETTE_FADER;
+uint8_t currentMode = MODE_PALETTE_SNAKE;
 
 
 // colors
@@ -87,6 +88,8 @@ void loop() {
   switch (currentMode) {
     case MODE_PALETTE_FADER:
       paletteFader();
+    case MODE_PALETTE_SNAKE:
+      paletteSnake();
   }
 
 
@@ -103,7 +106,7 @@ void loop() {
 #define PALETTE_FADER_CHUNKLEN 4
 uint8_t paletteFader_brightness = 0;
 bool paletteFader_incoming = true;
-uint8_t paletteFader_sleepCycles = 0;
+uint16_t paletteFader_sleepCycles = 0;
 uint8_t paletteFader_startColorIndex = 0;
 
 void paletteFader() {
@@ -149,3 +152,37 @@ void paletteFader() {
     }
   }
 }
+
+
+
+// PALETTE SNAKE
+#define PALETTE_SNAKE_CHUNKLEN 4
+#define PALETTE_SNAKE_MOVEDELAY 20
+uint8_t paletteSnake_offset = 0;
+uint16_t paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
+
+void paletteSnake() {
+  uint16_t colorIndex = 0, pixelIndex;
+
+  for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
+      if ((pixelIndex + paletteSnake_offset) % PALETTE_SNAKE_CHUNKLEN == 0) {
+        colorIndex++;
+      }
+
+      // COLORS_COUNT
+      strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
+  }
+
+
+  // move every MOVEDELAY
+  paletteSnake_waitCycles--;
+  if (paletteSnake_waitCycles == 0) {
+    paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
+
+    paletteSnake_offset++;
+    // if (paletteSnake_offset == PALETTE_FADER_CHUNKLEN) {
+    //   paletteSnake_offset = 0;
+    // }
+  }
+}
+
