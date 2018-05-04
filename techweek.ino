@@ -98,12 +98,50 @@ void loop() {
   delay(10);
 }
 
+
+// PALETTE FADER
+uint8_t paletteFader_brightness = 0;
+bool paletteFader_incoming = true;
+uint8_t paletteFader_sleepCycles = 0;
+uint8_t paletteFader_startColorIndex = 0;
+
 void paletteFader() {
-  uint16_t colorIndex = 0, pixelIndex;
+  uint16_t colorIndex = paletteFader_startColorIndex, pixelIndex;
+
+  if (paletteFader_sleepCycles > 0) {
+    paletteFader_sleepCycles--;
+    return;
+  }
 
   for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
       // COLORS_COUNT
-      strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
+      strip.setPixelColor(pixelIndex, gammaDim(colors[colorIndex % COLORS_COUNT], paletteFader_brightness));
       colorIndex++;
+  }
+
+  if (paletteFader_incoming) {
+    paletteFader_brightness += 5;
+
+    // handle reaching end of fade-in
+    if (paletteFader_brightness >= 255) {
+      paletteFader_brightness = 255;
+      paletteFader_incoming = false;
+      paletteFader_sleepCycles = 100;
+    }
+  } else {
+    paletteFader_brightness -= 5;
+
+    // handle reaching end of fade-out
+    if (paletteFader_brightness <= 0) {
+      paletteFader_brightness = 0;
+      paletteFader_incoming = true;
+      paletteFader_sleepCycles = 5;
+
+      paletteFader_startColorIndex++;
+
+      if (paletteFader_startColorIndex == COLORS_COUNT) {
+        paletteFader_startColorIndex = 0;
+      }
+    }
   }
 }
