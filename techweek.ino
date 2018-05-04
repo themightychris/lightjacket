@@ -100,6 +100,7 @@ void loop() {
 
 
 // PALETTE FADER
+#define PALETTE_FADER_CHUNKLEN 4
 uint8_t paletteFader_brightness = 0;
 bool paletteFader_incoming = true;
 uint8_t paletteFader_sleepCycles = 0;
@@ -116,7 +117,10 @@ void paletteFader() {
   for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
       // COLORS_COUNT
       strip.setPixelColor(pixelIndex, gammaDim(colors[colorIndex % COLORS_COUNT], paletteFader_brightness));
-      colorIndex++;
+
+      if (pixelIndex % PALETTE_FADER_CHUNKLEN == 0) {
+        colorIndex++;
+      }
   }
 
   if (paletteFader_incoming) {
