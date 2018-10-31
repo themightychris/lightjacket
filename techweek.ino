@@ -75,6 +75,10 @@ void setup() {
     gammaColors[i] = gammaColor(colors[i]);
   }
 
+  // select random modes
+  randomSeed(analogRead(0));
+  currentMode = random(0, MODES_COUNT);
+
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
 
