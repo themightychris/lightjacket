@@ -11,11 +11,12 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, PIN_STRIP, NEO_GRBW + NEO_KH
 // modes
 enum modes {
   MODE_PALETTE_FADER,
-  MODE_PALETTE_SNAKE,
+  // MODE_PALETTE_SNAKE,
+  MODE_RAINBOW,
 
   MODES_COUNT
 };
-uint8_t currentMode = MODE_PALETTE_SNAKE;
+uint8_t currentMode = MODE_PALETTE_FADER;
 
 
 // colors
@@ -92,8 +93,12 @@ void loop() {
   switch (currentMode) {
     case MODE_PALETTE_FADER:
       paletteFader();
-    case MODE_PALETTE_SNAKE:
-      paletteSnake();
+      break;
+    // case MODE_PALETTE_SNAKE:
+    //   paletteSnake();
+    case MODE_RAINBOW:
+      rainbow();
+      break;
   }
 
 
@@ -160,33 +165,46 @@ void paletteFader() {
 
 
 // PALETTE SNAKE
-#define PALETTE_SNAKE_CHUNKLEN 4
-#define PALETTE_SNAKE_MOVEDELAY 20
-uint8_t paletteSnake_offset = 0;
-uint16_t paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
+// #define PALETTE_SNAKE_CHUNKLEN 4
+// #define PALETTE_SNAKE_MOVEDELAY 20
+// uint8_t paletteSnake_offset = 0;
+// uint16_t paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
 
-void paletteSnake() {
-  uint16_t colorIndex = 0, pixelIndex;
+// void paletteSnake() {
+//   uint16_t colorIndex = 0, pixelIndex;
+
+//   for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
+//       if ((pixelIndex + paletteSnake_offset) % PALETTE_SNAKE_CHUNKLEN == 0) {
+//         colorIndex++;
+//       }
+
+//       // COLORS_COUNT
+//       strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
+//   }
+
+
+//   // move every MOVEDELAY
+//   paletteSnake_waitCycles--;
+//   if (paletteSnake_waitCycles == 0) {
+//     paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
+
+//     paletteSnake_offset++;
+//     // if (paletteSnake_offset == PALETTE_FADER_CHUNKLEN) {
+//     //   paletteSnake_offset = 0;
+//     // }
+//   }
+// }
+
+
+// RAINBOW
+uint16_t rainbow_cycle = 0;
+
+void rainbow() {
+  uint16_t pixelIndex;
 
   for (pixelIndex = 0; pixelIndex < N_LEDS; pixelIndex++) {
-      if ((pixelIndex + paletteSnake_offset) % PALETTE_SNAKE_CHUNKLEN == 0) {
-        colorIndex++;
-      }
-
-      // COLORS_COUNT
-      strip.setPixelColor(pixelIndex, gammaColors[colorIndex % COLORS_COUNT]);
+    strip.setPixelColor(pixelIndex, Wheel(((pixelIndex * 256 / N_LEDS) + rainbow_cycle) & 255));
   }
 
-
-  // move every MOVEDELAY
-  paletteSnake_waitCycles--;
-  if (paletteSnake_waitCycles == 0) {
-    paletteSnake_waitCycles = PALETTE_SNAKE_MOVEDELAY;
-
-    paletteSnake_offset++;
-    // if (paletteSnake_offset == PALETTE_FADER_CHUNKLEN) {
-    //   paletteSnake_offset = 0;
-    // }
-  }
+  rainbow_cycle++;
 }
-
